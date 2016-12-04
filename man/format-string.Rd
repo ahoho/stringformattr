@@ -5,12 +5,12 @@
 \alias{format-string}
 \title{Pass variables into strings}
 \usage{
-x %f% y
+string \%f\% args
 }
 \arguments{
-\item{x}{A character vector}
+\item{string}{A character vector}
 
-\item{y}{A (possibly named) character vector}
+\item{args}{A (possibly named) atomic vector}
 }
 \description{
 Pass variables into strings using pairs of curly brackets
@@ -20,12 +20,19 @@ to identify points of insertion.
 # order matters when not using a named vector
 'the quick {} fox jumped {} the lazy {}' \%f\% c('brown', 'over', 'dog')
 
+# use a named vector to insert values by referencing them
+# in the string
 gen_sql_query <- function(column, table, id){
     query <- "SELECT {col} FROM {tab} WHERE pk = {id}"
     query \%f\% c('col' = column, 'tab' = table, 'id' = id)
 }
 
 gen_sql_query('LASTNAME', 'STUDENTS', '12345')
+
+# `\%f\%` is vectorized
+
+v <- c('{vegetable}', '{animal}', '{mineral}', '{animal} and {mineral}')
+v \%f\% c('vegetable' = 'carrot', 'animal' = 'porpoise', 'mineral' = 'salt')
 
 }
 

@@ -29,16 +29,15 @@
 #' Pass variables into strings using pairs of curly brackets
 #' to identify points of insertion.
 #'
-#' @usage
-#' x %f% kwargs
-#'
-#' @param x A character vector
-#' @param kwargs A (possibly named) character vector
+#' @param string A character vector
+#' @param args A (possibly named) atomic vector
 #'
 #' @examples
 #' # order matters when not using a named vector
 #' 'the quick {} fox jumped {} the lazy {}' %f% c('brown', 'over', 'dog')
 #'
+#' # use a named vector to insert values by referencing them
+#' # in the string
 #' gen_sql_query <- function(column, table, id){
 #'     query <- "SELECT {col} FROM {tab} WHERE pk = {id}"
 #'     query %f% c('col' = column, 'tab' = table, 'id' = id)
@@ -46,32 +45,37 @@
 #'
 #' gen_sql_query('LASTNAME', 'STUDENTS', '12345')
 #'
+#' # `%f%` is vectorized
+#'
+#' v <- c('{vegetable}', '{animal}', '{mineral}', '{animal} and {mineral}')
+#' v %f% c('vegetable' = 'carrot', 'animal' = 'porpoise', 'mineral' = 'salt')
+#'
 #' @name format-string
 #' @export
-`%f%` <- function(string, kwargs) {
-  if (is.character(string) || is.atomic(kwargs)) stop("string and kwargs must be atomic vectors")
+`%f%` <- function(string, args) {
+  if (!is.character(string) || !is.atomic(args)) stop("string and args must be atomic vectors")
 
-  if (is.null(names(kwargs))) {
-    names(kwargs) <- seq_along(kwargs)
-    num_subs <- max(str_count(string, '\\{\\}'))
+  if (is.null(names(args))) {
+    names(args) <- seq_along(args)
+    num_subs <- max(stringr::str_count(string, '\\{\\}'))
 
-    if(length(kwargs) > 1 & length(kwargs) != num_subs) {
-      warning("Number of replacements in string differs from length of kwargs, recycling")
+    if(length(args) > 1 & length(args) != num_subs) {
+      warning("Number of replacements in string differs from length of args, recycling")
     }
 
-    string <- Reduce(.insert_num, num_blanks, init = string)
+    string <- Reduce(.insert_num, num_subs, init = string)
   }
 
-  kw_subs <- cbind(names(kwargs), kwargs)
-  funs <- apply(kw_subs, 1, .gsub_kwarg)
+  named_subs <- cbind(names(args), args)
+  funs <- apply(named_subs, 1, .gsub_arg)
 
   Reduce(function(x, y) y(x), funs, init = string)
 }
 
-.gsub_kwarg <- function(kw_sub) {
-  function(s) gsub('\\{' %p% kw_sub[1] %p% '\\}', kw_sub[2], s)
+.gsub_arg <- function(named_sub) {
+  function(s) gsub('\\{' %p% named_sub[1] %p% '\\}', named_sub[2], s)
 }
 
 .insert_num <- function(str, sub) {
-  str_replace('{' %p% str %p% '}', '\\{\\}', sub)
+  stringr::str_replace('{' %p% str %p% '}', '\\{\\}', sub)
 }

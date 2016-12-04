@@ -8,7 +8,7 @@ This is a simple set of functions that attempt to emulate python-like string for
 # > 'the quick brown fox jumped over the lazy dog'
 
 'SELECT {column} FROM {table}'.format(column = 'STUDENT_ID', table = 'STUDENTS')
-# > 'SELECT STUDENT_ID FROM TABLE'
+# > 'SELECT STUDENT_ID FROM STUDENTS'
 ```
     
 With this package, the same operations are available in R:

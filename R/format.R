@@ -1,26 +1,22 @@
 #' Concatenate two strings.
 #'
-#' `%p%`and `%s%` are wrappers for `paste0(..., collapse = '')` and
-#' `paste0(..., collapse = ' ')`, respectively, that combine two character vectors.
+#' \code{\%p\%} and \code{\%s\%} are wrappers for \code{paste0(..., collapse = '')} and
+#' \code{paste0(..., collapse = ' ')}, respectively, that combine two character vectors.
 #'
-#' @usage
-#' x %p% y
-#' x %s% y
-#'
-#' @param x A character vector
-#' @param y A character vector
+#' @param x,y A character vector
 #'
 #' @examples
 #' 'the quick brown fox jum' %p% 'ped over the lazy dog'
 #'
 #' gen_sql <- function(column, table) "SELECT" %s% column %s% "FROM" %s% table
-#' @name contat-two-strings
+#' 
+#' @name binary-string-concat
 
-#' @rdname contat-two-strings
+#' @rdname binary-string-concat
 #' @export
 `%p%` <- function(x, y){ paste0(x, y, collapse = '') }
 
-#' @rdname contat-two-strings
+#' @rdname binary-string-concat
 #' @export
 `%s%` <- function(x, y){ paste0(x, y, collapse = ' ') }
 
@@ -36,34 +32,41 @@
 #' # order matters when not using a named vector
 #' 'the quick {} fox jumped {} the lazy {}' %f% c('brown', 'over', 'dog')
 #'
-#' # use a named vector to insert values by referencing them
-#' # in the string
+#' # use a named vector to insert values by referencing them in the string
 #' gen_sql_query <- function(column, table, id){
 #'     query <- "SELECT {col} FROM {tab} WHERE pk = {id}"
-#'     query %f% c('col' = column, 'tab' = table, 'id' = id)
+#'     query %f% c(col = column, tab = table, id = id)
 #' }
 #'
 #' gen_sql_query('LASTNAME', 'STUDENTS', '12345')
 #'
 #' # `%f%` is vectorized
-#'
 #' v <- c('{vegetable}', '{animal}', '{mineral}', '{animal} and {mineral}')
-#' v %f% c('vegetable' = 'carrot', 'animal' = 'porpoise', 'mineral' = 'salt')
+#' v %f% c(vegetable = 'carrot', animal = 'porpoise', mineral = 'salt')
 #'
+#' # if the number of replacements is larger than the length of unnamed arguments,
+#' # `%f%` will recycle the arguments (and give a warning)
+#' c('{} {}', '{} {} {}', '{}') %f% c(0, 1)
+#' 
+#' # > "0 1" "0 1 0" "0"
+#'   
 #' @name format-string
 #' @export
 `%f%` <- function(string, args) {
   if (!is.character(string) || !is.atomic(args)) stop("string and args must be atomic vectors")
 
   if (is.null(names(args))) {
-    names(args) <- seq_along(args)
     num_subs <- max(stringr::str_count(string, '\\{\\}'))
+    args_seq <- seq_along(args)
+    
+    names(args) <- args_seq
+    sub_vec <- rep_len(args_seq, num_subs)
 
-    if(length(args) > 1 & length(args) != num_subs) {
-      warning("Number of replacements in string differs from length of args, recycling")
+    if(num_subs > 0 && length(args) > 0 && length(args) != num_subs) {
+      warning("Number of replacements in string differs from length of args")
     }
 
-    string <- Reduce(.insert_num, num_subs, init = string)
+    string <- Reduce(.insert_num, sub_vec, init = string)
   }
 
   named_subs <- cbind(names(args), args)
@@ -77,5 +80,5 @@
 }
 
 .insert_num <- function(str, sub) {
-  stringr::str_replace('{' %p% str %p% '}', '\\{\\}', sub)
+  stringr::str_replace(str, '\\{\\}', '{' %p% sub %p% '}')
 }

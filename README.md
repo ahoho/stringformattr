@@ -18,3 +18,5 @@ With this package, the same operations are available in R:
 
 'SELECT {column} FROM {table}' %f% c('column' = 'STUDENT_ID', 'table' = 'STUDENTS')
 ```
+
+Available on CRAN [here](https://cran.r-project.org/web/packages/stringformattr/index.html).

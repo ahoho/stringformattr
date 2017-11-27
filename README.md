@@ -16,7 +16,7 @@ With this package, the same operations are available in R:
 ```R
 'the quick brown fox jump' %p% 'ed over the lazy dog'
 
-'SELECT {column} FROM {table}' %f% c('column' = 'STUDENT_ID', 'table' = 'STUDENTS')
+'SELECT {column} FROM {table}' %f% c(column = 'STUDENT_ID', table = 'STUDENTS')
 ```
 
 Available on CRAN [here](https://cran.r-project.org/web/packages/stringformattr/index.html).

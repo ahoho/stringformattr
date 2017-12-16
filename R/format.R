@@ -1,7 +1,7 @@
 #' Concatenate two strings.
 #'
 #' \code{\%p\%} and \code{\%s\%} are wrappers for \code{paste0(..., collapse = '')} and
-#' \code{paste0(..., collapse = ' ')}, respectively, that combine two character vectors.
+#' \code{paste(..., collapse = ' ')}, respectively, which combine two character vectors.
 #'
 #' @param x,y A character vector
 #'
@@ -18,7 +18,7 @@
 
 #' @rdname binary-string-concat
 #' @export
-`%s%` <- function(x, y){ paste0(x, y, collapse = ' ') }
+`%s%` <- function(x, y){ paste(x, y, collapse = ' ') }
 
 #' Pass variables into strings
 #'

@@ -1,7 +1,7 @@
 Package: stringformattr
 Type: Package
 Title: Dynamic String Formatting
-Version: 0.1.1
+Version: 0.1.2
 Author: Alexander Hoyle
 Maintainer: Alexander <alexander@alexanderhoyle.com>
 Description: Pass named and unnamed character vectors into specified positions
@@ -10,6 +10,6 @@ Description: Pass named and unnamed character vectors into specified positions
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1
 Imports:
     stringr
